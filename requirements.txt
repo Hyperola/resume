@@ -12,7 +12,6 @@ confection==0.1.5
 cryptography==44.0.2
 cymem==2.0.11
 spacy==3.8.5
-en-core-web-sm==3.8.0
 Flask==3.1.0
 idna==3.10
 itsdangerous==2.2.0
@@ -36,7 +35,6 @@ requests==2.32.3
 rich==14.0.0
 shellingham==1.5.4
 smart-open==7.1.0
-spacy==3.8.5
 spacy-legacy==3.0.12
 spacy-loggers==1.0.5
 srsly==2.5.1

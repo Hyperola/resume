@@ -1,18 +1,21 @@
 from flask import Flask, render_template, request
 import os
 import spacy  # Import spaCy here
+import sys
+from spacy.cli import download
 
 from utils import extract_text_from_pdf, extract_skills, process_job_description, match_resume_with_job
 
 app = Flask(__name__)
 
-# Download and install the spaCy model if it isn't available
+# Ensure the spaCy model is available
+MODEL_NAME = "en_core_web_sm"
 try:
-    spacy.load("en_core_web_sm")
-except:
-    from spacy.cli import download
-    download("en_core_web_sm")
-    spacy.load("en_core_web_sm")
+    spacy.load(MODEL_NAME)
+except OSError:
+    print(f"Model {MODEL_NAME} not found. Downloading...")
+    download(MODEL_NAME)
+    spacy.load(MODEL_NAME)
 
 UPLOAD_FOLDER = "uploads"
 os.makedirs(UPLOAD_FOLDER, exist_ok=True)
