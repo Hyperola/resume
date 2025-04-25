@@ -1,8 +1,14 @@
 from flask import Flask, render_template, request
 import os
+import spacy  # Import spaCy here
+
 from utils import extract_text_from_pdf, extract_skills, process_job_description, match_resume_with_job
 
 app = Flask(__name__)
+
+# Download the spaCy model if it hasn't been downloaded
+spacy.cli.download("en_core_web_sm")  # This downloads the model
+nlp = spacy.load("en_core_web_sm")  # This loads the model into your app
 
 UPLOAD_FOLDER = "uploads"
 os.makedirs(UPLOAD_FOLDER, exist_ok=True)
