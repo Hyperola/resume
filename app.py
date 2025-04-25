@@ -6,13 +6,13 @@ from utils import extract_text_from_pdf, extract_skills, process_job_description
 
 app = Flask(__name__)
 
-# Download the spaCy model if it hasn't been downloaded
+# Download and install the spaCy model if it isn't available
 try:
-    spacy.load("en_core_web_sm")  # Try loading the model
+    spacy.load("en_core_web_sm")
 except:
     from spacy.cli import download
-    download("en_core_web_sm")  # This downloads the model if not found
-    spacy.load("en_core_web_sm")  # This loads the model into your app
+    download("en_core_web_sm")
+    spacy.load("en_core_web_sm")
 
 UPLOAD_FOLDER = "uploads"
 os.makedirs(UPLOAD_FOLDER, exist_ok=True)
