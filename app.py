@@ -1,6 +1,6 @@
 from flask import Flask, render_template, request
 import os
-import spacy  # Import spaCy here
+import spacy
 import sys
 from spacy.cli import download
 
@@ -11,11 +11,17 @@ app = Flask(__name__)
 # Ensure the spaCy model is available
 MODEL_NAME = "en_core_web_sm"
 try:
-    spacy.load(MODEL_NAME)
+    nlp = spacy.load(MODEL_NAME)
+    print(f"Successfully loaded {MODEL_NAME}")
 except OSError:
-    print(f"Model {MODEL_NAME} not found. Downloading...")
-    download(MODEL_NAME)
-    spacy.load(MODEL_NAME)
+    print(f"Model {MODEL_NAME} not found. Attempting to download...")
+    try:
+        download(MODEL_NAME)
+        nlp = spacy.load(MODEL_NAME)
+        print(f"Successfully downloaded and loaded {MODEL_NAME}")
+    except Exception as e:
+        print(f"Failed to download {MODEL_NAME}: {e}")
+        sys.exit(1)
 
 UPLOAD_FOLDER = "uploads"
 os.makedirs(UPLOAD_FOLDER, exist_ok=True)
@@ -44,4 +50,8 @@ def index():
     return render_template("index.html")
 
 if __name__ == "__main__":
-    app.run(debug=True)
+    # Get the port from the environment variable (Render sets this), default to 5000 for local dev
+    port = int(os.getenv("PORT", 5000))
+    # Bind to 0.0.0.0 for Render, 127.0.0.1 for local dev
+    host = "0.0.0.0" if os.getenv("RENDER") else "127.0.0.1"
+    app.run(host=host, port=port, debug=True)
