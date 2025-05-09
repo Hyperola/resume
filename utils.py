@@ -1,5 +1,10 @@
 import pdfminer.high_level
 import spacy
+import docx
+from langdetect import detect, DetectorFactory
+
+# Ensure deterministic language detection
+DetectorFactory.seed = 0
 
 # Load spaCy English model
 nlp = spacy.load("en_core_web_sm")
@@ -15,6 +20,26 @@ predefined_skills = {
 # Extract raw text from a PDF file
 def extract_text_from_pdf(pdf_path):
     return pdfminer.high_level.extract_text(pdf_path)
+
+# Extract raw text from a DOCX file
+def extract_text_from_docx(docx_file):
+    text = ""
+    doc = docx.Document(docx_file)
+    for paragraph in doc.paragraphs:
+        text += paragraph.text + "\n"
+    return text
+
+# Extract raw text from a TXT file
+def extract_text_from_txt(txt_file):
+    with open(txt_file, "r", encoding="utf-8") as file:
+        return file.read()
+
+# Detect the language of the given text
+def detect_language(text):
+    try:
+        return detect(text)
+    except Exception as e:
+        return "unknown"
 
 # Extract relevant skills from resume text
 def extract_skills(text):
