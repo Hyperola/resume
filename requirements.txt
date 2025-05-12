@@ -13,6 +13,10 @@ cryptography==44.0.2
 cymem==2.0.11
 spacy==3.8.5
 Flask==3.1.0
+Flask-Bcrypt==1.0.1
+Flask-Cors==5.0.0
+Flask-Login==0.6.3
+Flask-SQLAlchemy==3.1.1
 idna==3.10
 itsdangerous==2.2.0
 Jinja2==3.1.6
