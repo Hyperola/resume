@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request, redirect, url_for, flash, jsonify, send_file
+from flask import Flask, render_template, request, redirect, url_for, flash, jsonify, send_file, send_from_directory
 from flask_sqlalchemy import SQLAlchemy
 from flask_bcrypt import Bcrypt
 from flask_login import LoginManager, UserMixin, login_user, logout_user, login_required, current_user
@@ -68,6 +68,14 @@ UPLOAD_FOLDER = "uploads"
 os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 app.config["UPLOAD_FOLDER"] = UPLOAD_FOLDER
 
+@app.route("/")
+def index():
+    return send_from_directory("static", "index.html")
+
+@app.route("/<path:path>")
+def serve_static(path):
+    return send_from_directory("static", path)
+
 @app.route("/register", methods=["GET", "POST"])
 def register():
     if request.method == "POST":
@@ -111,50 +119,6 @@ def logout():
     logout_user()
     flash("You have been logged out.", "info")
     return redirect(url_for("login"))
-
-@app.route("/", methods=["GET", "POST"])
-def index():
-    if request.method == "POST":
-        if "resume" not in request.files:
-            flash("No file uploaded.", "danger")
-            return redirect(url_for("index"))
-
-        file = request.files["resume"]
-        job_desc = request.form["job_desc"]
-
-        if file and job_desc:
-            filepath = os.path.join(app.config["UPLOAD_FOLDER"], file.filename)
-            file.save(filepath)
-
-            mime = magic.Magic()
-            file_type = mime.from_file(filepath)
-
-            try:
-                if "pdf" in file_type.lower():
-                    resume_text = extract_text_from_pdf(filepath)
-                elif "word" in file_type.lower():
-                    resume_text = extract_text_from_docx(filepath)
-                elif "text" in file_type.lower():
-                    resume_text = extract_text_from_txt(filepath)
-                else:
-                    flash("Unsupported file type.", "danger")
-                    return redirect(url_for("index"))
-
-                language = detect_language(resume_text)
-                resume_skills = extract_skills(resume_text)
-                job_skills = process_job_description(job_desc)
-                match_score = match_resume_with_job(resume_text, job_desc)
-
-                return render_template("result.html",
-                                       resume_skills=resume_skills,
-                                       job_skills=job_skills,
-                                       score=round(match_score, 2),
-                                       language=language)
-
-            finally:
-                os.remove(filepath)
-
-    return render_template("index.html")
 
 @app.route("/upload", methods=["POST"])
 def upload_resume():
